@@ -1,5 +1,5 @@
 # PIPELINE DEFINITION
-# Name: iris-classification-pipeline
+# Name: iris-classification-pipeline-test
 # Description: Orchestrate the end-to-end classification pipeline.
 components:
   comp-acquire-dataset:
