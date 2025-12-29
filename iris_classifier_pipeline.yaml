@@ -1,5 +1,5 @@
 # PIPELINE DEFINITION
-# Name: iris-classifier-pipeline
+# Name: iris-classifier-pipeline-test
 # Description: Defines the complete pipeline for classification.
 components:
   comp-evaluate-model:
