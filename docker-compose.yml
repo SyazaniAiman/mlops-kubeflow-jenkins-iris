@@ -1,0 +1,27 @@
+services:
+  iris-blue:
+    image: iris-api:local
+    container_name: iris-blue
+    restart: always
+    environment:
+      - APP_VERSION=blue
+      - MODEL_PATH=/app/artifacts/iris_model.joblib
+
+  iris-green:
+    image: iris-api:local
+    container_name: iris-green
+    restart: always
+    environment:
+      - APP_VERSION=green
+      - MODEL_PATH=/app/artifacts/iris_model.joblib
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: iris-nginx
+    depends_on:
+      - iris-blue
+      - iris-green
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
