@@ -1,14 +1,20 @@
 pipeline {
-  agent any
+  agent { label 'windows' }
+
+  options {
+    disableConcurrentBuilds()
+  }
 
   stages {
     stage('Checkout') {
       steps { checkout scm }
     }
 
-    stage('Install Dependencies') {
+    stage('Setup Python + Install') {
       steps {
         bat '''
+          py -3.11 -m venv .venv
+          call .venv\\Scripts\\activate.bat
           python -m pip install --upgrade pip
           python -m pip install -r service\\requirements.txt
         '''
@@ -18,6 +24,7 @@ pipeline {
     stage('Unit Tests') {
       steps {
         bat '''
+          call .venv\\Scripts\\activate.bat
           python -m pytest -q
         '''
       }
@@ -26,6 +33,7 @@ pipeline {
     stage('Train Model Artifact') {
       steps {
         bat '''
+          call .venv\\Scripts\\activate.bat
           python service\\train_local.py
           dir artifacts
           type artifacts\\metrics.txt
@@ -54,8 +62,17 @@ pipeline {
     stage('Smoke Test') {
       steps {
         bat '''
-          curl http://127.0.0.1:8081/health
-          curl -X POST http://127.0.0.1:8081/predict -H "Content-Type: application/json" -d "{\\"features\\":[5.1,3.5,1.4,0.2]}"
+          curl.exe http://127.0.0.1:8081/health
+          curl.exe -X POST http://127.0.0.1:8081/predict -H "Content-Type: application/json" -d "{\\"features\\":[5.1,3.5,1.4,0.2]}"
+        '''
+      }
+    }
+
+    stage('Switch To Green') {
+      steps {
+        bat '''
+          powershell -ExecutionPolicy Bypass -File .\\deploy\\switch_to_green.ps1
+          curl.exe http://127.0.0.1:8081/health
         '''
       }
     }
