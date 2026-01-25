@@ -21,22 +21,23 @@ pipeline {
       }
     }
 
-    stage('Unit Tests') {
-      steps {
-        bat '''
-          call .venv\\Scripts\\activate.bat
-          python -m pytest -q
-        '''
-      }
-    }
-
     stage('Train Model Artifact') {
       steps {
         bat '''
           call .venv\\Scripts\\activate.bat
+          if not exist artifacts mkdir artifacts
           python service\\train_local.py
           dir artifacts
           type artifacts\\metrics.txt
+        '''
+      }
+    }
+
+    stage('Unit + API Tests') {
+      steps {
+        bat '''
+          call .venv\\Scripts\\activate.bat
+          python -m pytest -q
         '''
       }
     }
