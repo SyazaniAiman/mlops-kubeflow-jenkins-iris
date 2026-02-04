@@ -1,5 +1,5 @@
 # requirements for this pipeline
 kfp
-numpy
+numpy==2.4.2
 scikit-learn
 joblib
