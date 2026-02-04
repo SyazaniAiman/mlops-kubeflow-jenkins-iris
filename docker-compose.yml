@@ -1,4 +1,14 @@
 services:
+  trainer:
+    build:
+      context: .
+      dockerfile: training/Dockerfile
+    container_name: iris-trainer
+    environment:
+      - MODEL_OUT=/app/artifacts/iris_model.joblib
+    volumes:
+      - ./artifacts:/app/artifacts
+
   iris-blue:
     image: iris-api:local
     build:
@@ -38,22 +48,3 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
 
-
-  trainer:
-    build:
-      context: .
-      dockerfile: training/Dockerfile
-    environment:
-      - MODEL_OUT=/app/artifacts/iris_model.joblib
-    volumes:
-      - ./artifacts:/app/artifacts
-
-  api:
-    build:
-      context: .
-      dockerfile: service/Dockerfile
-    environment:
-      - MODEL_PATH=/app/artifacts/iris_model.joblib
-    volumes:
-      - ./artifacts:/app/artifacts:ro
-  
