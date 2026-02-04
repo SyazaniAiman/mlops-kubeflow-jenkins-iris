@@ -37,3 +37,23 @@ services:
       - "8081:80"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
+
+
+  trainer:
+    build:
+      context: .
+      dockerfile: training/Dockerfile
+    environment:
+      - MODEL_OUT=/app/artifacts/iris_model.joblib
+    volumes:
+      - ./artifacts:/app/artifacts
+
+  api:
+    build:
+      context: .
+      dockerfile: service/Dockerfile
+    environment:
+      - MODEL_PATH=/app/artifacts/iris_model.joblib
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+  
